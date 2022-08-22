@@ -174,7 +174,15 @@ class GoogleDrive{
     }
 
     public function downloadImages($images){
-        foreach($images['files'] as $image){
+
+
+        foreach($images['files'] as $image){     
+            $filepath = $image['path'].$image['name'];   
+            if(file_exists($filepath)){
+                echo $image['name'].' has already been downloaded'.PHP_EOL;
+                continue;
+            }
+
             if(!file_exists($image['path'])){
                 mkdir($image['path'], 0777, true);
             }
@@ -182,7 +190,7 @@ class GoogleDrive{
             $response = $this->service->files->get($image['id'],['alt' => 'media']);
             $content = $response->getBody()->getContents();
             
-            $imageFile = fopen($image['path'].$image['name'], 'w');
+            $imageFile = fopen($filepath, 'w');
             fwrite($imageFile, $content);
             fclose($imageFile);
         }
