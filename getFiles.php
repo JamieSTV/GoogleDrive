@@ -1,25 +1,17 @@
 <?php 
-require 'client.php';
+require 'googleDrive.php';
 
-use Google\Service\Drive;
+$drive = new GoogleDrive();
 
-$client = getClient();
-$service = new Drive($client);
-
-
-// get files list
-$optParams = array(
-    'pageSize' => 10,
-    'fields' => 'nextPageToken, files(id, name)'
-);
-$results = $service->files->listFiles($optParams);
-
-if (count($results->getFiles()) == 0) {
-    die("No files found.\n");
-} 
-
-foreach ($results->getFiles() as $file) {
-    printf("%s (%s)\n", $file->getName(), $file->getId());
+// get images list if none exists. 
+if(!file_exists('images.json')){
+    $images = $drive->getFiles();
+    $file = fopen('images.json','w');
+    fputs($file,json_encode($drive->files));
+    fclose($file);
 }
 
+$images = json_decode(file_get_contents('images.json'),true);
+$drive->downloadImages($images);
 
+die('done');
