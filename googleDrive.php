@@ -193,6 +193,9 @@ class GoogleDrive{
             $imageFile = fopen($filepath, 'w');
             fwrite($imageFile, $content);
             fclose($imageFile);
+
+
+            echo $image['name'].' Downloaded'.PHP_EOL;
         }
     }
 }
