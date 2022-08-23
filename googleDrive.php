@@ -82,7 +82,7 @@ class GoogleDrive{
         $programmes = [];
         do {
             $pageToken = null;
-            $files = $this->listFiles("'{$parentId}' in parents and mimeType = 'application/vnd.google-apps.folder'");
+            $files = $this->listFiles("'{$parentId}' in parents and mimeType = 'application/vnd.google-apps.folder'", $pageToken);
             foreach($files['files'] as $file){
                 if($file->mimeType == 'application/vnd.google-apps.folder'){
                     $programmes[] = [
@@ -112,7 +112,7 @@ class GoogleDrive{
         $parentId = $parentId ?? $this->topFolder;
         do {
             $pageToken = null;
-            $files = $this->listFiles("'{$parentId}' in parents");
+            $files = $this->listFiles("'{$parentId}' in parents", $pageToken);
             foreach($files['files'] as $file){
                 if($file->mimeType == 'application/vnd.google-apps.folder'){
                     echo "\e[0;31mDirectory\e[0m: ".$this->getPath($file->getId()).PHP_EOL;
@@ -181,7 +181,7 @@ class GoogleDrive{
         }
     }
 
-    protected function listFiles($query){
+    protected function listFiles($query, $pageToken){
         return $this->service->files->listFiles([
             'q' => $query,
             'supportsAllDrives' => true,
@@ -189,6 +189,6 @@ class GoogleDrive{
             'spaces' => 'drive',
             'pageToken' => $pageToken,
             'fields' => 'nextPageToken, files(*)'
-        ])
+        ]);
     }
 }
