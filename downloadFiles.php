@@ -1,4 +1,6 @@
 <?php 
+ini_set('memory_limit', '5000M');
+
 require 'googleDrive.php';
 
 $drive = new GoogleDrive();

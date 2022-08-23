@@ -82,15 +82,7 @@ class GoogleDrive{
         $programmes = [];
         do {
             $pageToken = null;
-            $files = $this->service->files->listFiles([
-                'q' => "'{$parentId}' in parents and mimeType = 'application/vnd.google-apps.folder'",
-                'supportsAllDrives' => true,
-                'includeItemsFromAllDrives' => true,
-                'spaces' => 'drive',
-                'pageToken' => $pageToken,
-                'fields' => 'nextPageToken, files(*)'
-            ]);
-
+            $files = $this->listFiles("'{$parentId}' in parents and mimeType = 'application/vnd.google-apps.folder'");
             foreach($files['files'] as $file){
                 if($file->mimeType == 'application/vnd.google-apps.folder'){
                     $programmes[] = [
@@ -120,15 +112,7 @@ class GoogleDrive{
         $parentId = $parentId ?? $this->topFolder;
         do {
             $pageToken = null;
-            $files = $this->service->files->listFiles([
-                'q' => "'{$parentId}' in parents",
-                'supportsAllDrives' => true,
-                'includeItemsFromAllDrives' => true,
-                'spaces' => 'drive',
-                'pageToken' => $pageToken,
-                'fields' => 'nextPageToken, files(*)'
-            ]);
-
+            $files = $this->listFiles("'{$parentId}' in parents");
             foreach($files['files'] as $file){
                 if($file->mimeType == 'application/vnd.google-apps.folder'){
                     echo "\e[0;31mDirectory\e[0m: ".$this->getPath($file->getId()).PHP_EOL;
@@ -174,8 +158,6 @@ class GoogleDrive{
     }
 
     public function downloadImages($images){
-
-
         foreach($images['files'] as $image){     
             $filepath = $image['path'].$image['name'];   
             if(file_exists($filepath)){
@@ -197,5 +179,16 @@ class GoogleDrive{
 
             echo $image['name'].' Downloaded'.PHP_EOL;
         }
+    }
+
+    protected function listFiles($query){
+        return $this->service->files->listFiles([
+            'q' => $query,
+            'supportsAllDrives' => true,
+            'includeItemsFromAllDrives' => true,
+            'spaces' => 'drive',
+            'pageToken' => $pageToken,
+            'fields' => 'nextPageToken, files(*)'
+        ])
     }
 }
